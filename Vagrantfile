@@ -31,7 +31,7 @@ Vagrant::Config.run do |config|
       },
       "app" => {
         "docroot" => "/home/vagrant/web-app",
-	"extra_packages"     => ["php5-xsl", "php5-svn", "php5-xml"]
+	"extra_packages"     => ["php5-xsl", "php5-svn"]
       },
       # You can configure the VM with a few custom options.
       # Only modify the options below if the defaults don't suit your needs.
