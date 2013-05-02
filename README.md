@@ -27,5 +27,6 @@ Chefbooks:
     
 Extras:
 ==============
-    createdb (create user and database for MySQL) Usage: bash# createdb testdb testuser secretpass
+    createdb (create user and database for MySQL) 
+    Usage: bash# createdb testdb testuser secretpass
     
