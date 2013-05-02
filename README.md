@@ -1,4 +1,4 @@
-lines-vagrant
+Lines-vagrant
 =============
 
 Last Updated : 30th April 2013
@@ -24,3 +24,9 @@ Chefbooks:
     yum(auto update system packages)
     openssl
     memcached
+    
+Extras:
+==============
+    createdb (create user and database for MySQL) 
+    Usage: bash# createdb testdb testuser secretpass
+    
