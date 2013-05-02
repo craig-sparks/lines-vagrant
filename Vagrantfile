@@ -1,53 +1,25 @@
 Vagrant::Config.run do |config|
-  config.vm.box = "dev-vm-2.0"
-  config.vm.box_url = "https://zeelot.s3.amazonaws.com/dev-vm-2.0-base.box"
+	config.vm.box = "lines-dev-1.0"
+  
+	config.vm.boot_mode = :gui
 
-  # Boot with a GUI so you can see the screen. (Default is headless)
-  # config.vm.boot_mode = :gui
+	config.vm.network :hostonly, "33.33.33.33"
+	config.vm.network :bridged
+	config.vm.forward_port 80, 8080
+	
+	config.vm.host_name = "dev.lines.com"
 
-  # Assign this VM to a host only network IP, allowing you to access it
-  # via the IP.
-  config.vm.network :hostonly, "33.33.33.10"
-  config.vm.network :bridged
+	config.vm.share_folder("web-app", "/home/vagrant/web-app", "../", :owner => "vagrant")
 
-  # Forward a port from the guest to the host, which allows for outside
-  # computers to access the VM, whereas host only networking does not.
-  config.vm.forward_port 80, 8080
-
-  config.vm.share_folder("web-app", "/home/vagrant/web-app", "../", :owner => "vagrant")
-
-  config.vm.provision :chef_solo do |chef|
-    # This path will be expanded relative to the project directory
-    chef.cookbooks_path = "cookbooks"
-
-    chef.add_recipe("vagrant_main")
-    # Uncomment the recipes you would want this app to use
-    chef.add_recipe("vagrant_main::mysql")
-    # chef.add_recipe("vagrant_main::rabbitmq")
-    chef.json = {
-      "xdebug" => {
-        "remote_enable" => "1",
-        "remote_host" => "33.33.33.1"
-      },
-      "app" => {
-        "docroot" => "/home/vagrant/web-app",
-	"extra_packages"     => ["php5-xsl", "php5-svn"]
-      },
-      # You can configure the VM with a few custom options.
-      # Only modify the options below if the defaults don't suit your needs.
-      # "app" => {
-      #   Server name used in the apache virtualhost (default is "localhost")
-      #   "server_name"        => "localhost",
-      #   aliases used in the apache virtualhost (default is ["*.localhost"])
-      #   "server_aliases"     => ["*.localhost"]
-      #   The docroot in the VM where the app is (default is "/home/vagrant/web-app/httpdocs")
-      #   You might want to alter this if you don't keep public files in an httpdocs directory
-      #   "docroot"            => "/home/vagrant/web-app"
-      #   The Kohana Environment set in the apache virtualhost (default is "development")
-      #   "kohana_environment" => ""
-      #   A list of extra packages you need installed on the VM (default is [])
-      #   "extra_packages"     => ["php5-xsl", "php5-svn", "php5-xml"]
-      # }
-    }
-  end
+	config.vm.provision :chef_solo do |chef|
+		chef.cookbooks_path = "cookbooks"
+		chef.add_recipe("yum")
+		chef.add_recipe("apache2")
+		chef.add_recipe("apache2::mod_rewrite")
+		chef.add_recipe("apache2::mod_headers")
+		chef.add_recipe("php")
+		chef.add_recipe("lines-vm::apache-vhost")
+		chef.add_recipe("git")
+		chef.add_recipe("lines-vm::mysql")
+	end
 end
