@@ -13,14 +13,6 @@ recipe            "git::source", "Installs git from source"
   supports os
 end
 
-supports "mac_os_x", ">= 10.6.0"
-
-%w{ dmg build-essential yum windows }.each do |cookbook|
-  depends cookbook
-end
-
-depends "runit", ">= 1.0"
-
 attribute "git/server/base_path",
   :display_name => "Git Daemon Base Path",
   :description => "A directory containing git repositories to be exposed by the git-daemon",

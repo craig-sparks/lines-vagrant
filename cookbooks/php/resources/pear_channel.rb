@@ -1,9 +1,9 @@
 #
-# Cookbook Name:: yum
-# Attributes:: default
+# Author:: Seth Chisamore <schisamo@opscode.com>
+# Cookbook Name:: php
+# Resource:: pear_channel
 #
-# Copyright 2011, Eric G. Wolfe
-# Copyright 2011, Opscode, Inc.
+# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@
 # limitations under the License.
 #
 
-# Example: override.yum.exclude = "kernel* compat-glibc*"
-default['yum']['exclude'] = Array.new
-default['yum']['installonlypkgs'] = Array.new
-default['yum']['ius_release'] = '1.0-11'
-default['yum']['repoforge_release'] = '0.5.2-2'
-default['yum']['proxy'] = ''
-default['yum']['proxy_username'] = ''
-default['yum']['proxy_password'] = ''
-default['yum']['cachedir'] = '/var/cache/yum'
-default['yum']['keepcache'] = 0
+default_action :discover
+actions :discover, :add, :update, :remove
+
+attribute :channel_name, :kind_of => String, :name_attribute => true
+attribute :channel_xml, :kind_of => String
+
+# TODO add authenticated channel support!
+# attribute :username, :kind_of => String
+# attribute :password, :kind_of => String

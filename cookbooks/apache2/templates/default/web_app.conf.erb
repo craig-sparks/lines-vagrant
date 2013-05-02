@@ -1,47 +1,81 @@
 <VirtualHost *:80>
+  SetEnv APP_ENV <%= @params[:app_environment] %>
   ServerName <%= @params[:server_name] %>
-  ServerAlias <% @params[:server_aliases].each do |a| %><%= a %> <% end %>
+  ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
   DocumentRoot <%= @params[:docroot] %>
-  RewriteEngine On
 
-  <Directory <%= @params[:docroot] %>>
-    Options <%= [@params[:directory_options] || "FollowSymLinks" ].flatten.join " " %>
-    AllowOverride <%= [@params[:allow_override] || "None" ].flatten.join " " %>
-    Order allow,deny
-    Allow from all
-  </Directory>
-
-  <Directory />
-    Options FollowSymLinks
-    AllowOverride None
-  </Directory>
-
-  <Location /server-status>
-    SetHandler server-status
-
-    Order Deny,Allow
-    Deny from all
-    Allow from 127.0.0.1
-  </Location>
-
-  LogLevel info
-  ErrorLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-error.log
-  CustomLog <%= node['apache']['log_dir'] %>/<%= @params[:name] %>-access.log combined
-
-  <% if @params[:directory_index] -%>
-  DirectoryIndex <%= [@params[:directory_index]].flatten.join " " %>
-  <% end -%>
+  LogLevel debug
+  ErrorLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
+  CustomLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
 
   RewriteEngine On
-  RewriteLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-rewrite.log
+  RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
   RewriteLogLevel 0
 
-  # Canonical host, <%= @params[:server_name] %>
-  RewriteCond %{HTTP_HOST}   !^<%= @params[:server_name] %> [NC]
-  RewriteCond %{HTTP_HOST}   !^$
-  RewriteRule ^/(.*)$        http://<%= @params[:server_name] %>/$1 [L,R=301]
+  <Directory <%= @params[:docroot] %>>
+    php_admin_value upload_tmp_dir /tmp/<%= @params[:server_name] %>
 
-  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
-  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-  RewriteRule ^.*$ /system/maintenance.html [L]
+    DirectoryIndex index.php index.html
+    RewriteEngine on
+    Options +FollowSymlinks
+    AllowOverride none
+
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule .* index.php/$0 [PT]
+  </Directory>
+
+  <% @params[:aliases].each do |web_alias| -%>
+  Alias <%= web_alias[:uri] %> <%= web_alias[:file_path] %>
+
+  <Directory <%= web_alias[:file_path] %>>
+    Options Indexes +FollowSymLinks
+    DirectoryIndex index.php index.html
+  </Directory>
+  <% end -%>
 </VirtualHost>
+
+<% if @params[:enable_ssl] %>
+<VirtualHost *:443>
+  SetEnv APP_ENV <%= @params[:app_environment] %>
+  ServerName <%= @params[:server_name] %>
+  ServerAlias <% @params[:server_aliases].each do |a| %><%= "#{a}" %> <% end %>
+  DocumentRoot <%= @params[:docroot] %>
+
+  LogLevel debug
+  ErrorLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-error.log
+  CustomLog <%= node[:apache][:log_dir] %>/<%= @params[:name] %>-access.log combined
+
+  RewriteEngine On
+  RewriteLog <%= node[:apache][:log_dir] %>/<%= @application_name %>-rewrite.log
+  RewriteLogLevel 0
+
+  <Directory <%= @params[:docroot] %>>
+    php_admin_value upload_tmp_dir /tmp/<%= @params[:server_name] %>
+
+    DirectoryIndex index.php index.html
+    RewriteEngine on
+    Options +FollowSymlinks
+    AllowOverride none
+
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule .* index.php/$0 [PT]
+  </Directory>
+
+  <% @params[:aliases].each do |web_alias| -%>
+  Alias <%= web_alias[:uri] %> <%= web_alias[:file_path] %>
+
+  <Directory <%= web_alias[:file_path] %>>
+    Options Indexes +FollowSymLinks
+    DirectoryIndex index.php index.html
+  </Directory>
+  <% end -%>
+
+  SSLEngine on
+  SSLCertificateFile /home/vagrant/ssl/<%= @params[:server_name] %>.server.crt
+  SSLCertificateKeyFile /home/vagrant/ssl/<%= @params[:server_name] %>.server.key
+</VirtualHost>
+<% end %>

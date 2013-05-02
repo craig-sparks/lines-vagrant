@@ -1,9 +1,10 @@
 #
-# Cookbook Name:: yum
-# Attributes:: default
+# Author::  Joshua Timberman (<joshua@opscode.com>)
+# Author::  Seth Chisamore (<schisamo@opscode.com>)
+# Cookbook Name:: php
+# Recipe:: module_mysql
 #
-# Copyright 2011, Eric G. Wolfe
-# Copyright 2011, Opscode, Inc.
+# Copyright 2009-2011, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,13 +19,14 @@
 # limitations under the License.
 #
 
-# Example: override.yum.exclude = "kernel* compat-glibc*"
-default['yum']['exclude'] = Array.new
-default['yum']['installonlypkgs'] = Array.new
-default['yum']['ius_release'] = '1.0-11'
-default['yum']['repoforge_release'] = '0.5.2-2'
-default['yum']['proxy'] = ''
-default['yum']['proxy_username'] = ''
-default['yum']['proxy_password'] = ''
-default['yum']['cachedir'] = '/var/cache/yum'
-default['yum']['keepcache'] = 0
+pkg = value_for_platform(
+  %w(centos redhat scientific fedora amazon) => {
+    %w(5.0 5.1 5.2 5.3 5.4 5.5 5.6 5.7 5.8) => "php53-mysql",
+    "default" => "php-mysql"
+  },
+  "default" => "php5-mysql"
+)
+
+package pkg do
+  action :install
+end

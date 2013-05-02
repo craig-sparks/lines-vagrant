@@ -20,8 +20,6 @@ if node["platform"] == "windows"
   return "#{node['platform']} is not supported by the #{cookbook_name}::#{recipe_name} recipe"
 end
 
-include_recipe "build-essential"
-
 pkgs = value_for_platform_family(
   ["rhel"] => %w{ expat-devel gettext-devel libcurl-devel openssl-devel perl-ExtUtils-MakeMaker zlib-devel }
 )
