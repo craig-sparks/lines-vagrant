@@ -24,3 +24,8 @@ Chefbooks:
     yum(auto update system packages)
     openssl
     memcached
+    
+Extras:
+==============
+    createdb (create user and database for MySQL) Usage: bash# createdb testdb testuser secretpass
+    
