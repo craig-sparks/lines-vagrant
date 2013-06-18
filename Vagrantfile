@@ -1,15 +1,17 @@
 Vagrant::Config.run do |config|
 	config.vm.box = "lines-dev-1.0"
   
-	config.vm.boot_mode = :gui
+	config.vm.boot_mode = :headless
 
 	config.vm.network :hostonly, "33.33.33.33"
 	config.vm.network :bridged
-	config.vm.forward_port 80, 8080
+	config.vm.forward_port 80, 8181
+	config.vm.forward_port 3306, 3306
 	
 	config.vm.host_name = "dev.lines.com"
 
-	config.vm.share_folder("web-app", "/home/vagrant/web-app", "../", :owner => "vagrant")
+	config.vm.share_folder("lines", "/home/vagrant/lines", "../lines.com/", :owner => "vagrant")
+	config.vm.share_folder("odds", "/home/vagrant/odds", "../odds.com/", :owner => "vagrant")
 
 	config.vm.provision :chef_solo do |chef|
 		chef.cookbooks_path = "cookbooks"
