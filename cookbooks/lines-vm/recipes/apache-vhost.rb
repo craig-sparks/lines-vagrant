@@ -1,8 +1,8 @@
 #move apache2-vhost.conf to a location Apache is expecting to find it
-cookbook_file "/etc/httpd/sites-enabled/lines-web-app.conf" do
+cookbook_file "/etc/httpd/sites-enabled/web-app.conf" do
   source "apache2-vhost.conf"
-  group "root"
-  owner "root"
+  group "vagrant"
+  owner "vagrant"
 end
 
 # chmod dev directorys
@@ -23,3 +23,4 @@ end
 service "apache2" do
   action :restart
 end
+

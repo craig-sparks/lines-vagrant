@@ -1,5 +1,5 @@
 Vagrant::Config.run do |config|
-	config.vm.box = "lines-dev-1.0"
+	config.vm.box = "dev-1.0"
   
 	config.vm.boot_mode = :headless
 
