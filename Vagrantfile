@@ -12,6 +12,7 @@ Vagrant::Config.run do |config|
 
 	config.vm.share_folder("lines", "/home/vagrant/lines", "../lines.com", :owner => "vagrant")
 	config.vm.share_folder("odds", "/home/vagrant/odds", "../odds.com", :owner => "vagrant")
+	config.vm.share_folder("picks", "/home/vagrant/picks", "../picks.com", :owner => "vagrant")
 
 	config.vm.provision :chef_solo do |chef|
 		chef.cookbooks_path = "cookbooks"
@@ -19,6 +20,7 @@ Vagrant::Config.run do |config|
 		chef.add_recipe("apache2")
 		chef.add_recipe("apache2::mod_rewrite")
 		chef.add_recipe("apache2::mod_headers")
+		chef.add_recipe("apache2::mod_ssl")
 		chef.add_recipe("php")
 		chef.add_recipe("lines-vm::apache-vhost")
 		chef.add_recipe("git")
